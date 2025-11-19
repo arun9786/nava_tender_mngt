@@ -1,4 +1,4 @@
-package com.example.tender.config;
+package com.example.tender.configuration;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

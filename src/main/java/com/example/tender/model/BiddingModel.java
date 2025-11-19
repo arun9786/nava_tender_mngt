@@ -1,8 +1,7 @@
 package com.example.tender.model;
 
-import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "bidding")
@@ -10,28 +9,22 @@ public class BiddingModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private Integer id;
     @Column(unique = true)
     private Integer biddingId;
-
     private String projectName = "Metro Phase V 2024";
     private Double bidAmount;
     private Double yearsToComplete;
     private String dateOfBidding;
     private String status = "pending";
 
-    @Column(nullable = false)
     private Integer bidderId;
 
-    @PrePersist
-    public void prePersist() {
-        this.dateOfBidding = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    public BiddingModel() {
     }
-
     // getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public Integer getBiddingId() { return biddingId; }
     public void setBiddingId(Integer biddingId) { this.biddingId = biddingId; }

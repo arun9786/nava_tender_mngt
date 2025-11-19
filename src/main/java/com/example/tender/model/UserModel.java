@@ -1,25 +1,52 @@
 package com.example.tender.model;
 
-import jakarta.persistence.*;
-
+import javax.persistence.*;
 @Entity
 @Table(name = "users")
 public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String username;
     private String companyName;
-
+    private String password;
     @Column(unique = true, nullable = false)
     private String email;
-
-    private String password;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "role", referencedColumnName = "id")
     private RoleModel role;
+
+    public UserModel() {
+    }
+
+    public UserModel(Integer id, String username, String companyName, String password, String email, RoleModel role) {
+        this.id = id;
+        this.username = username;
+        this.companyName = companyName;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+    }
+
+    public UserModel(int id, String username, String password,String email, RoleModel role) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    public UserModel(String username, String password,String email, RoleModel role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    public UserModel(String password,String email) {
+        this.email = email;
+        this.password = password;
+    }
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }

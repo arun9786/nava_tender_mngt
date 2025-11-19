@@ -1,7 +1,7 @@
 package com.example.tender.service;
 
 import com.example.tender.model.UserModel;
-import com.example.tender.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,18 +13,17 @@ import java.util.Collection;
 import java.util.List;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class LoginService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserService userService;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserModel user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+        UserModel user = userService.getUserByEmail(email);
+
+        if(user==null) {
+            throw new UsernameNotFoundException("User not found: " + email);
+        }
 
         Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().getRolename()));
 
@@ -37,5 +36,13 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .credentialsExpired(false)
                 .disabled(false)
                 .build();
+    }
+
+    private UserDetails buildUserForAuthentication(UserModel userModel,  List<GrantedAuthority> authorities){
+        return null;
+    }
+
+    private List<GrantedAuthority> buildUserAuthority(String userRole){
+        return null;
     }
 }
