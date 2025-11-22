@@ -81,7 +81,7 @@ public class BiddingService {
         if (biddingModel.getStatus() == null) return ResponseEntity.badRequest().body("Invalid input");
 
         Optional<BiddingModel> opt = biddingRepository.findById(id);
-        if (opt.isEmpty()) return ResponseEntity.badRequest().body("not found");
+        if (!opt.isPresent()) return ResponseEntity.badRequest().body("not found");
         BiddingModel b = opt.get();
         b.setStatus(biddingModel.getStatus());
         biddingRepository.save(b);
@@ -90,7 +90,7 @@ public class BiddingService {
 
     public ResponseEntity<Object> deleteBidding(int id, Authentication auth) {
         Optional<BiddingModel> opt = biddingRepository.findById(id);
-        if (opt.isEmpty()) {
+        if (!opt.isPresent()) {
             return ResponseEntity.badRequest().body("not found");
         }
 

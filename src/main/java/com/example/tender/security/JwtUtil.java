@@ -3,7 +3,6 @@ package com.example.tender.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.security.Key;
@@ -19,9 +18,6 @@ public class JwtUtil {
 
     private final String secretKey = "uP9sd82FJk4bA1mXzV6lH8q9T1Qr5c2zB7pKfG9uR1yS0wV3lPbA9gQ7nH2mK8sD";
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
-    }
 
     public String getUsernameFromToken(String token){
         return getClaimFromToken(token, Claims::getSubject);
@@ -32,7 +28,7 @@ public class JwtUtil {
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver){
-        Claims claims= Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+        Claims claims= Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         return claimsResolver.apply(claims);
     }
 
@@ -47,7 +43,7 @@ public class JwtUtil {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)  // Correct Way
+                .signWith(SignatureAlgorithm.HS512, secretKey)  // Correct Way
                 .compact();
     }
 
