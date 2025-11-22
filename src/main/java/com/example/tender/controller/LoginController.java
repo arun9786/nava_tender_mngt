@@ -28,18 +28,20 @@ public class LoginController {
 
 
     @PostMapping("/login")
-    public Object authenticateUser(@RequestBody LoginDTO authenticationRequest) throws Exception{
+    public ResponseEntity<Map<String, Object>> authenticateUser(@RequestBody LoginDTO authenticationRequest) throws Exception{
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.badRequest().body("Invalid credentials");
+            Map<String, Object> map = new HashMap<>();
+            map.put("message", "Invalid credentials");
+            return ResponseEntity.badRequest().body(map);
         }
 
         UserDetails userDetails = loginService.loadUserByUsername(authenticationRequest.getEmail());
         String token = jwtUtil.generateToken(userDetails);
         Map<String, Object> resp = new HashMap<>();
-        resp.put("token", token);
-        resp.put("status", 200);
+        resp.put("jwt", token);
+        resp.put("status", Integer.valueOf(200));
         return ResponseEntity.ok(resp);
     }
 }

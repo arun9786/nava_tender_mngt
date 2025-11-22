@@ -15,7 +15,16 @@ public class RoleModel {
     public RoleModel() {
     }
 
+    public RoleModel(Integer id) {
+        this.id = id;
+    }
+
     public RoleModel(String rolename) {
+        this.rolename = rolename;
+    }
+
+    public RoleModel(Integer id, String rolename) {
+        this.id = id;
         this.rolename = rolename;
     }
 

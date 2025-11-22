@@ -29,11 +29,11 @@ public class BiddingService {
         return auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).anyMatch(r -> r.equals(role));
     }
 
-    public ResponseEntity<Object> postBidding(@RequestBody BiddingModel biddingModel, Authentication auth) {
+    public ResponseEntity<Object> postBidding(BiddingModel biddingModel, Authentication auth) {
         if (!hasRole(auth, "BIDDER")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Only bidders allowed");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only bidders allowed");
         }
-        if (biddingModel.getBiddingId() == null || biddingModel.getBidAmount() == null || biddingModel.getYearsToComplete() == null) {
+        if (biddingModel.getBiddingId() == 0 || biddingModel.getBidAmount() == 0 || biddingModel.getYearsToComplete() == 0) {
             return ResponseEntity.badRequest().body("Invalid input");
         }
 
@@ -43,7 +43,6 @@ public class BiddingService {
 
         BiddingModel b = new BiddingModel();
         b.setBiddingId(biddingModel.getBiddingId());
-        b.setProjectName("Metro Phase V 2024");
         b.setBidAmount(biddingModel.getBidAmount());
         b.setYearsToComplete(biddingModel.getYearsToComplete());
         b.setDateOfBidding(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
@@ -58,9 +57,9 @@ public class BiddingService {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    public ResponseEntity<Object> getBidding(@RequestParam(name="bidAmount", required = true) Double bidAmount, Authentication auth) {
+    public ResponseEntity<Object> getBidding(Double bidAmount, Authentication auth) {
         if (!hasRole(auth, "BIDDER") && !hasRole(auth, "APPROVER")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Only bidders or approvers are allowed");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only bidders or approvers are allowed");
         } else {
             if (bidAmount != null) {
                 List<BiddingModel> list = biddingRepository.findByBidAmountGreaterThan(bidAmount);
@@ -76,7 +75,7 @@ public class BiddingService {
 
     public ResponseEntity<Object> updateBidding(int id, BiddingModel biddingModel, Authentication auth) {
         if (!hasRole(auth, "APPROVER")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Only approver allowed");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only approver allowed");
         }
         if (biddingModel.getStatus() == null) return ResponseEntity.badRequest().body("Invalid input");
 
@@ -102,7 +101,7 @@ public class BiddingService {
         UserModel userModel = userService.getUserByEmail(email);
         Integer userId =userModel.getId();
 
-        boolean isCreator = bidding.getBidderId() != null && bidding.getBidderId().equals(userId);
+        boolean isCreator = bidding.getBidderId() != 0 && (bidding.getBidderId()==userId);
 
         if (!isApprover && !isCreator) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("you don't have permission");
